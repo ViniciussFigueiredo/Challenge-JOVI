@@ -1,6 +1,5 @@
-# 🚀 Sprint 2 - FIAP (Turma 1TDSOC) | Desafio JOVI
+# 🚀 Challenge JOVI - FIAP (Turma 1TDSOC)
 
-![Status](https://img.shields.io/badge/Status-Conclu%C3%ADdo-brightgreen)
 ![Curso](https://img.shields.io/badge/Curso-ADS-blue)
 ![FIAP](https://img.shields.io/badge/Faculdade-FIAP-red)
 
