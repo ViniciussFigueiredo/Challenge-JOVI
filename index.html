@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOVI - Smart Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen font-sans p-0 sm:p-4">
+
+    <div class="w-full max-w-md bg-slate-50 h-[844px] rounded-none sm:rounded-[36px] shadow-2xl flex flex-col justify-between overflow-hidden relative border-0 sm:border-8 border-gray-900">
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-4 pb-20 no-scrollbar">
+
+            <div class="relative w-full">
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Pesquisar (ex: Pessoas, Viagens)..." 
+                       class="w-full bg-blue-100/70 text-blue-900 placeholder-blue-400 pl-4 pr-10 py-2.5 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                <i data-lucide="search" class="absolute right-3 top-3 text-blue-500 w-4 h-4"></i>
+            </div>
+
+            <div>
+                <h1 id="pageTitle" class="text-3xl font-extrabold text-gray-900 tracking-tight">Galeria</h1>
+                <p class="text-xs text-gray-500 mt-0.5">
+                    Espaço ocupado (<span id="storagePercentText">92%</span>) • 
+                    <button onclick="switchTab('limpeza')" class="text-blue-600 font-semibold underline hover:text-blue-800">Otimizar Celular</button>
+                </p>
+            </div>
+
+            <div class="flex space-x-2 overflow-x-auto pb-1 text-xs no-scrollbar" id="tagFilters">
+                <button onclick="filterByTag('Todos')" class="filter-btn active bg-blue-600 text-white px-3.5 py-1.5 rounded-lg font-medium shadow-sm transition">Todos</button>
+                <button onclick="filterByTag('Pessoas')" class="filter-btn bg-white text-blue-600 border border-blue-200 px-3.5 py-1.5 rounded-lg font-medium hover:bg-blue-50 transition">Pessoas</button>
+                <button onclick="filterByTag('Viagens')" class="filter-btn bg-white text-blue-600 border border-blue-200 px-3.5 py-1.5 rounded-lg font-medium hover:bg-blue-50 transition">Viagens</button>
+                <button onclick="filterByTag('Prints')" class="filter-btn bg-white text-blue-600 border border-blue-200 px-3.5 py-1.5 rounded-lg font-medium hover:bg-blue-50 transition">Prints</button>
+                <button onclick="filterByTag('Comidas')" class="filter-btn bg-white text-blue-600 border border-blue-200 px-3.5 py-1.5 rounded-lg font-medium hover:bg-blue-50 transition">Comidas</button>
+            </div>
+
+            <div id="viewGallery" class="view-section">
+                <div id="mediaGrid" class="grid grid-cols-3 gap-1.5">
+                </div>
+            </div>
+
+            <div id="viewAlbums" class="view-section hidden">
+                <div id="albumsGrid" class="grid grid-cols-3 gap-3">
+                </div>
+            </div>
+
+            <div id="viewLimpeza" class="view-section hidden space-y-4">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                    <h2 class="text-sm font-bold text-gray-800">Status do Armazenamento</h2>
+                    <div class="space-y-1.5">
+                        <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden flex">
+                            <div id="barSeguras" class="bg-blue-600 h-full w-[80%] transition-all duration-500"></div>
+                            <div id="barOtimizavel" class="bg-amber-500 h-full w-[12%] transition-all duration-500"></div>
+                            <div id="barLivre" class="bg-gray-300 h-full w-[8%] transition-all duration-500"></div>
+                        </div>
+                        <div class="flex justify-between text-[11px] font-semibold text-gray-500 px-0.5">
+                            <span id="textSeguras" class="text-blue-600">24.2 GB</span>
+                            <span id="textOtimizavel" class="text-amber-500">3.4 GB</span>
+                            <span id="textLivre" class="text-gray-400">2.4 GB</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 text-[11px] pt-1">
+                        <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-blue-600"></span><span class="text-gray-600">Fotos Seguras</span></span>
+                        <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-gray-600">Otimizável</span></span>
+                        <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-gray-300"></span><span class="text-gray-600">Livre</span></span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-2">
+                    <h2 class="text-sm font-bold text-gray-800">Recomendações de Limpeza</h2>
+                    <ul class="text-xs text-gray-600 space-y-1.5 font-medium">
+                        <li class="flex justify-between"><span>Fotos Duplicadas:</span> <strong class="text-blue-600">1.2 GB</strong></li>
+                        <li class="flex justify-between"><span>Salvas na Nuvem:</span> <strong class="text-blue-600">1.8 GB</strong></li>
+                        <li class="flex justify-between"><span>Temporários (Cache):</span> <strong class="text-blue-600">400 MB</strong></li>
+                    </ul>
+                </div>
+
+                <button id="btnLiberar" onclick="openModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 text-sm transition transform active:scale-95">
+                    Liberar 3.4 GB Agora
+                </button>
+            </div>
+
+            <div id="viewCamera" class="view-section hidden flex flex-col items-center justify-center h-96 bg-black rounded-2xl relative overflow-hidden">
+                <div class="text-white text-center space-y-2">
+                    <i data-lucide="camera" class="w-12 h-12 mx-auto text-gray-400"></i>
+                    <p class="text-xs text-gray-400">Câmera Ativa - Modo Mídia Inteligente</p>
+                </div>
+                <button onclick="capturePhoto()" class="absolute bottom-6 w-14 h-14 bg-white rounded-full border-4 border-gray-300 shadow-lg active:scale-90 transition"></button>
+            </div>
+
+            <div id="viewLixeira" class="view-section hidden space-y-3">
+                <h2 class="text-sm font-bold text-gray-700">Lixeira (Itens Removidos)</h2>
+                <div id="trashGrid" class="grid grid-cols-3 gap-1.5">
+                </div>
+            </div>
+
+        </div>
+
+        <nav class="bg-white border-t border-gray-200 px-3 py-2.5 flex justify-between items-center absolute bottom-0 left-0 right-0 z-10">
+            <button id="nav-camera" onclick="switchTab('camera')" class="nav-item text-gray-500 flex flex-col items-center space-y-0.5 w-1/4">
+                <i data-lucide="camera" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Câmera</span>
+            </button>
+            <button id="nav-galeria" onclick="switchTab('galeria')" class="nav-item text-blue-600 flex flex-col items-center space-y-0.5 w-1/4">
+                <i data-lucide="image" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Galeria</span>
+            </button>
+            <button id="nav-album" onclick="switchTab('album')" class="nav-item text-gray-500 flex flex-col items-center space-y-0.5 w-1/4">
+                <i data-lucide="folder" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Álbum</span>
+            </button>
+            <button id="nav-limpeza" onclick="switchTab('limpeza')" class="nav-item text-gray-500 flex flex-col items-center space-y-0.5 w-1/4">
+                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Limpeza</span>
+            </button>
+        </nav>
+
+        <div id="modalLimpeza" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+            <div class="bg-white rounded-2xl p-5 max-w-xs w-full text-center space-y-3 shadow-2xl animate-fade-in">
+                <h3 class="text-lg font-extrabold text-gray-900">Liberar 3.4 GB</h3>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    Você irá otimizar seu celular ao liberar essa quantidade de espaço.
+                </p>
+                <div class="flex space-x-2 pt-2">
+                    <button onclick="closeModal()" class="w-1/2 bg-blue-100 text-blue-700 py-2.5 rounded-xl font-bold text-xs hover:bg-blue-200 transition">Cancelar</button>
+                    <button onclick="executeOptimization()" class="w-1/2 bg-blue-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-blue-700 transition">Avançar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalImagePreview" class="fixed inset-0 bg-black/80 backdrop-blur-md flex flex-col justify-between p-4 z-50 hidden">
+            <div class="flex justify-between items-center text-white pt-2">
+                <span id="previewTag" class="text-xs font-bold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full">Tag</span>
+                <button onclick="closeImagePreview()" class="text-white hover:text-gray-300 p-1">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 flex items-center justify-center my-4 overflow-hidden rounded-2xl">
+                <img id="previewImg" src="" class="max-h-full max-w-full object-contain rounded-lg">
+            </div>
+
+            <div class="flex justify-around items-center bg-gray-900/80 backdrop-blur-md py-3 px-6 rounded-2xl text-white">
+                <button onclick="deleteSingleImage()" class="flex flex-col items-center space-y-1 text-red-400 hover:text-red-300 transition">
+                    <i data-lucide="trash-2" class="w-6 h-6"></i>
+                    <span class="text-[10px] font-semibold">Apagar Foto</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
