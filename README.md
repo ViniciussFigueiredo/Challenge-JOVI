@@ -31,7 +31,6 @@ O projeto foi desenvolvido em resposta a um desafio real proposto pela empresa *
 ## 📂 Estrutura do Repositório
 
 ```text
-  ├── assets/          # Imagens, recursos visuais e marcas da solução
   ├── css/             # Arquivos de estilização (CSS / Tailwind / Bootstrap)
   ├── js/              # Lógicas em JavaScript e integrações
   ├── index.html       # Interface e página principal do projeto
